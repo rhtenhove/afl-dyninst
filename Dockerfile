@@ -1,5 +1,6 @@
-FROM aflplusplus/aflplusplus
+FROM ubuntu:20.04
 LABEL "maintainer"="vh@thc.org"
+LABEL "about"="afl-dyninst docker image"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -8,9 +9,11 @@ ARG BUILD_RTLIB_32=ON
 RUN dpkg --add-architecture i386
 
 RUN apt-get update && apt-get -y install \
+    git \
     tar \
     gzip \
     curl \
+    build-essential \
     cmake \
     libelf-dev \
     libelf1 \
@@ -24,6 +27,12 @@ RUN git clone https://github.com/dyninst/dyninst \
     && cmake .. \
     && make \
     && make install
+
+RUN git clone https://github.com/vanhauser-thc/AFLplusplus \
+    && cd AFLplusplus \
+    && make source-only \
+    && make install \
+    && cd ..
 
 RUN git clone https://github.com/vanhauser-thc/afl-dyninst \
     && cd afl-dyninst \
